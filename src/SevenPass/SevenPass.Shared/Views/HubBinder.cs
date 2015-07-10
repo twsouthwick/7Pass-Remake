@@ -173,11 +173,10 @@ namespace SevenPass.Views
                     .Apply(x => ScreenExtensions.TryDeactivate(x, false));
             }
 
-            private void OnCollectionChanged(object sender,
+            private async void OnCollectionChanged(object sender,
                 NotifyCollectionChangedEventArgs e)
             {
-                _hub.Dispatcher.RunAsync(
-                    CoreDispatcherPriority.Normal, Apply);
+                await _hub.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Apply);
             }
 
             private void OnSectionsInViewChanged(object sender,

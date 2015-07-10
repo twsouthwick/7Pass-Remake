@@ -31,11 +31,14 @@ namespace SevenPass.Services.Picker
         /// Handles continuation after file picking.
         /// </summary>
         /// <param name="args">The continuation event arguments.</param>
+#if !WINDOWS_PHONE_APP
+        public Task ContinueAsync(IActivatedEventArgs args)
+        {
+            return Task.FromResult(true);
+        }
+#else
         public async Task ContinueAsync(IActivatedEventArgs args)
         {
-#if !WINDOWS_PHONE_APP
-            return;
-#else
             switch (args.Kind)
             {
                 case ActivationKind.PickFileContinuation:
@@ -77,14 +80,18 @@ namespace SevenPass.Services.Picker
 
             var source = await StorageFile.GetFileFromPathAsync((string)path);
             await Continue(FilePickTargets.Attachments, source, savePars.File);
-#endif
         }
+#endif
 
         /// <summary>
         /// Shows the file picker UI.
         /// </summary>
         /// <param name="target">The target for the file.</param>
+#if WINDOWS_PHONE_APP
+        public Task PickAsync(FilePickTargets target)
+#else
         public async Task PickAsync(FilePickTargets target)
+#endif
         {
             var picker = new FileOpenPicker
             {
@@ -96,13 +103,19 @@ namespace SevenPass.Services.Picker
             picker.ContinuationData.Add(
                 "Target", target.ToString());
             picker.PickSingleFileAndContinue();
+
+            return Task.FromResult(true);
 #else
             var file = await picker.PickSingleFileAsync();
             await Continue(target, file);
 #endif
         }
 
+#if WINDOWS_PHONE_APP
+        public Task SaveAsync(IStorageFile file)
+#else
         public async Task SaveAsync(IStorageFile file)
+#endif
         {
             var picker = new FileSavePicker
             {
@@ -120,6 +133,8 @@ namespace SevenPass.Services.Picker
 #if WINDOWS_PHONE_APP
             picker.ContinuationData.Add("Source", file.Path);
             picker.PickSaveFileAndContinue();
+
+            return Task.FromResult(true);
 #else
             var target = await picker.PickSaveFileAsync();
             await Continue(FilePickTargets.Attachments, file, target);
