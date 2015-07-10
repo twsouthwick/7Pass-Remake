@@ -56,7 +56,7 @@ namespace SevenPass.ViewModels
         {
             if (events == null)
                 throw new ArgumentNullException("events");
-            
+
             _events = events;
         }
 
@@ -122,9 +122,17 @@ namespace SevenPass.ViewModels
 
         public async void Unpin()
         {
-            var deleted = await _tile.RequestDeleteAsync();
-            if (deleted)
+            try
+            {
+                var deleted = await _tile.RequestDeleteAsync();
+                if (deleted)
+                    Tile = null;
+            }
+            // An exception is thrown if the pin cannot be found
+            catch (Exception)
+            {
                 Tile = null;
+            }
         }
     }
 }
