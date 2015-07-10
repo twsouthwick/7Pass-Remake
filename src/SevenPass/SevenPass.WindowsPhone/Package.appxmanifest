@@ -25,7 +25,4 @@
       </m3:VisualElements>
     </Application>
   </Applications>
-  <Capabilities>
-    <Capability Name="internetClientServer" />
-  </Capabilities>
 </Package>
