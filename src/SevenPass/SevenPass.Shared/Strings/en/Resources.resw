@@ -124,7 +124,7 @@
     <value>keyfile</value>
   </data>
   <data name="AppName.Text" xml:space="preserve">
-    <value>7Pass</value>
+    <value>KeePassWin</value>
   </data>
   <data name="ClearKeyfile.Content" xml:space="preserve">
     <value>Remove Keyfile</value>
