@@ -4,14 +4,18 @@ using System.Reflection;
 using Windows.UI.Xaml.Navigation;
 using Caliburn.Micro;
 
+
 namespace SevenPass.Tests.ViewModels
 {
     public class MockNavigationService : INavigationService
     {
+#pragma warning disable 0067
         public event NavigatedEventHandler Navigated;
         public event NavigatingCancelEventHandler Navigating;
         public event NavigationFailedEventHandler NavigationFailed;
         public event NavigationStoppedEventHandler NavigationStopped;
+#pragma warning restore 0067
+
         public IList<PageStackEntry> BackStack { get; private set; }
         public bool CanGoBack { get; set; }
         public bool CanGoForward { get; set; }
