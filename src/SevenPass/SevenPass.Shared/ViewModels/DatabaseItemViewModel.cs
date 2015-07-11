@@ -32,9 +32,7 @@ namespace SevenPass.ViewModels
         {
             get
             {
-                return _tile == null
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                return _tile == null ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -75,18 +73,15 @@ namespace SevenPass.ViewModels
         {
             get
             {
-                return _tile != null
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                return _tile != null ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
         public async void Delete()
         {
-            var msg = new MessageDialog(Name + " will be removed from 7Pass. " +
-                "This do not delete the actual database file.")
+            var msg = new MessageDialog(string.Format(Resources.GetString("RemoveFromManagerMessage"), Name))
             {
-                Title = "Remove this database?",
+                Title = Resources.GetString("RemoveFromManagerPrompt"),
                 Commands =
                 {
                     new UICommand("yes", _ => _events
@@ -109,7 +104,7 @@ namespace SevenPass.ViewModels
                 .WithParam(x => x.DisplayName, Name)
                 .BuildUri();
 
-            var tile = new SecondaryTile("DB_" + Id, Name, uri.AbsoluteUri,
+            var tile = new SecondaryTile(TileId, Name, uri.AbsoluteUri,
                 new Uri("ms-appx:///Assets/Square71x71Logo.scale-240.png"),
                 TileSize.Default);
 
@@ -122,6 +117,11 @@ namespace SevenPass.ViewModels
 
         public async void Unpin()
         {
+            if (_tile == null)
+            {
+                return;
+            }
+
             try
             {
                 var deleted = await _tile.RequestDeleteAsync();

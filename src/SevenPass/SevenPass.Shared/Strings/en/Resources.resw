@@ -144,4 +144,10 @@
   <data name="PasswordTitle.Text" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="RemoveFromManagerMessage" xml:space="preserve">
+    <value>Database '{0}' will be removed from the list of databases. This does not delete the actual database file.</value>
+  </data>
+  <data name="RemoveFromManagerPrompt" xml:space="preserve">
+    <value>Remove from list?</value>
+  </data>
 </root>
