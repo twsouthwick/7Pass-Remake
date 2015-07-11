@@ -52,7 +52,7 @@ namespace SevenPass.IO
         /// <exception cref="System.ArgumentNullException">
         /// The <paramref name="input"/> parameter cannot be <c>null</c>.
         /// </exception>
-        public async Task AddKeyFile(IRandomAccessStream input)
+        public async Task AddKeyFileAsync(IRandomAccessStream input)
         {
             _keyFile = await LoadKeyFile(input);
         }

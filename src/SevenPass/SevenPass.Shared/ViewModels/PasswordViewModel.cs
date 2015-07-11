@@ -137,7 +137,7 @@ namespace SevenPass.ViewModels
 
             KeyfileName = file.Name;
             using (var input = await file.OpenReadAsync())
-                await _password.AddKeyFile(input);
+                await _password.AddKeyFileAsync(input);
 
             NotifyOfPropertyChange(() => CanOpenDatabase);
             NotifyOfPropertyChange(() => CanClearKeyfile);

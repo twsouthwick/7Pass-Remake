@@ -14,7 +14,7 @@ namespace SevenPass.Tests.IO
             using (var keyfile = TestFiles.Read("IO.Demo7Pass.bin"))
             {
                 var data = new PasswordData();
-                await data.AddKeyFile(keyfile);
+                await data.AddKeyFileAsync(keyfile);
                 Assert.True(data.HasKeyFile);
 
                 data.ClearKeyfile();
@@ -42,7 +42,7 @@ namespace SevenPass.Tests.IO
             using (var keyfile = TestFiles.Read("IO.Demo7Pass.bin"))
             {
                 // Password & keyfile
-                await data.AddKeyFile(keyfile);
+                await data.AddKeyFileAsync(keyfile);
                 Assert.True(data.IsValid);
             }
 
@@ -61,7 +61,7 @@ namespace SevenPass.Tests.IO
             using (var input = TestFiles.Read("IO.Demo7Pass.bin"))
             {
                 var data = new PasswordData();
-                await data.AddKeyFile(input);
+                await data.AddKeyFileAsync(input);
 
                 var master = data.GetMasterKey();
                 Assert.Equal(
@@ -76,7 +76,7 @@ namespace SevenPass.Tests.IO
             using (var input = TestFiles.Read("IO.Demo7Pass.hex"))
             {
                 var data = new PasswordData();
-                await data.AddKeyFile(input);
+                await data.AddKeyFileAsync(input);
 
                 var master = data.GetMasterKey();
                 Assert.Equal(
@@ -94,7 +94,7 @@ namespace SevenPass.Tests.IO
                 {
                     Password = "demo",
                 };
-                await data.AddKeyFile(input);
+                await data.AddKeyFileAsync(input);
 
                 var master = data.GetMasterKey();
                 Assert.Equal(
@@ -123,7 +123,7 @@ namespace SevenPass.Tests.IO
             using (var input = TestFiles.Read("IO.Demo7Pass.txt"))
             {
                 var data = new PasswordData();
-                await data.AddKeyFile(input);
+                await data.AddKeyFileAsync(input);
 
                 var master = data.GetMasterKey();
                 Assert.Equal(
@@ -138,7 +138,7 @@ namespace SevenPass.Tests.IO
             using (var input = TestFiles.Read("IO.Demo7Pass.key"))
             {
                 var data = new PasswordData();
-                await data.AddKeyFile(input);
+                await data.AddKeyFileAsync(input);
 
                 var master = data.GetMasterKey();
                 Assert.Equal(
