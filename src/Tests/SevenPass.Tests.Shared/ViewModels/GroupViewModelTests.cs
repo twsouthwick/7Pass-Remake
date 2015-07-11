@@ -48,9 +48,9 @@ namespace SevenPass.Tests.ViewModels
         }
 
         [Fact]
-        public async Task Should_populate_items_on_initialize()
+        public void Should_populate_items_on_initialize()
         {
-            await _viewModel.Initialize();
+            _viewModel.Initialize();
 
             var group = Assert.Single(_viewModel.Items
                 .OfType<GroupItemViewModel>());
@@ -62,9 +62,9 @@ namespace SevenPass.Tests.ViewModels
         }
 
         [Fact]
-        public async Task Should_populate_names_on_initialize()
+        public void Should_populate_names_on_initialize()
         {
-            await _viewModel.Initialize();
+            _viewModel.Initialize();
             Assert.Equal("Demo DB", _viewModel.DatabaseName);
             Assert.Equal("Root Group", _viewModel.DisplayName);
         }

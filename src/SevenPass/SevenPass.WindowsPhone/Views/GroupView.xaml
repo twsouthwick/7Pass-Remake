@@ -19,10 +19,11 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="24,17,0,28">
+        <StackPanel Grid.Row="0" Margin="24,17,0,0">
             <TextBlock Name="DatabaseName" Text="~Database Name"
                 Style="{ThemeResource TitleTextBlockStyle}"
                 Typography.Capitals="SmallCaps" />
@@ -31,7 +32,11 @@
                 ContinuumNavigationTransitionInfo.IsEntranceElement="True" />
         </StackPanel>
 
-        <ListView Name="Items" Grid.Row="1"
+        <StackPanel Grid.Row="1" Margin="0,0,0,28">
+            <TextBox x:Name="SearchText" />
+        </StackPanel>
+
+        <ListView Name="Items" Grid.Row="2"
             ContinuumNavigationTransitionInfo.ExitElementContainer="True">
             <ListView.Resources>
                 <Style TargetType="ListViewItem">

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using SevenPass.Entry.ViewModels;
+using SevenPass.Models;
+using SevenPass.Services.Cache;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Caliburn.Micro;
-using SevenPass.Models;
-using SevenPass.Entry.ViewModels;
-using SevenPass.Services.Cache;
 
 namespace SevenPass.ViewModels
 {
@@ -14,10 +14,11 @@ namespace SevenPass.ViewModels
     public sealed class GroupViewModel : Screen
     {
         private readonly ICacheService _cache;
-        private readonly BindableCollection<IItemViewModel> _items;
         private readonly INavigationService _navigation;
+        private readonly BindableCollection<IItemViewModel> _items = new BindableCollection<IItemViewModel>();
 
         private object _selectedItem;
+        private string _searchText;
 
         /// <summary>
         /// Gets or sets the database name.
@@ -28,6 +29,40 @@ namespace SevenPass.ViewModels
         /// Gets or sets the UUID of the group to be displayed.
         /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Search text for the view
+        /// </summary>
+        public string SearchText
+        {
+            get { return _searchText; }
+            set
+            {
+                _searchText = value;
+                FilterItems(_searchText);
+                NotifyOfPropertyChange(() => SearchText);
+            }
+        }
+
+        private void FilterItems(string searchText)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                Initialize();
+            }
+            else
+            {
+
+                var root = GetGroup();
+                var result = root.ExpandEntries()
+                    .Where(e => e.Title.ContainsIgnoreCase(searchText))
+                    .Select(e => new EntryItemViewModel(e))
+                    .OrderBy(e => e.Title);
+
+                _items.Clear();
+                _items.AddRange(result);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the group items.
@@ -65,37 +100,39 @@ namespace SevenPass.ViewModels
             _cache = cache;
             _navigation = navigation;
             DatabaseName = _cache.Database.Name;
-            _items = new BindableCollection<IItemViewModel>();
+        }
+
+        private GroupItemModel GetGroup()
+        {
+            var element = !string.IsNullOrEmpty(Id)
+                ? _cache.GetGroup(Id)
+                : _cache.Root;
+
+            // TODO: handle group not found
+            return new GroupItemModel(element);
         }
 
         /// <summary>
         /// Initializes the page.
         /// </summary>
         /// <returns></returns>
-        public Task Initialize()
+        public void Initialize()
         {
-            return Task.Run(() =>
-            {
-                var element = !string.IsNullOrEmpty(Id)
-                    ? _cache.GetGroup(Id)
-                    : _cache.Root;
+            var group = GetGroup();
+            DisplayName = group.Name;
 
-                // TODO: handle group not found
-                var group = new GroupItemModel(element);
-                DisplayName = group.Name;
+            var groups = group
+                .ListGroups()
+                .Select(x => new GroupItemViewModel(x))
+                .Cast<IItemViewModel>();
 
-                var groups = group
-                    .ListGroups()
-                    .Select(x => new GroupItemViewModel(x))
-                    .Cast<IItemViewModel>();
+            var entries = group
+                .ListEntries()
+                .Select(x => new EntryItemViewModel(x))
+                .Cast<IItemViewModel>();
 
-                var entries = group
-                    .ListEntries()
-                    .Select(x => new EntryItemViewModel(x))
-                    .Cast<IItemViewModel>();
-
-                _items.AddRange(groups.Concat(entries));
-            });
+            Items.Clear();
+            Items.AddRange(groups.Concat(entries));
         }
 
         protected override void OnInitialize()
