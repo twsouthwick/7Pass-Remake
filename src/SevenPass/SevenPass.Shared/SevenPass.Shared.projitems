@@ -55,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\GroupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\EntryItemViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\GroupItemViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IItemViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PasswordViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\AppBarBinder.cs" />

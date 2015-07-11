@@ -14,7 +14,7 @@ namespace SevenPass.ViewModels
     public sealed class GroupViewModel : Screen
     {
         private readonly ICacheService _cache;
-        private readonly BindableCollection<object> _items;
+        private readonly BindableCollection<IItemViewModel> _items;
         private readonly INavigationService _navigation;
 
         private object _selectedItem;
@@ -32,7 +32,7 @@ namespace SevenPass.ViewModels
         /// <summary>
         /// Gets or sets the group items.
         /// </summary>
-        public BindableCollection<object> Items
+        public BindableCollection<IItemViewModel> Items
         {
             get { return _items; }
         }
@@ -65,7 +65,7 @@ namespace SevenPass.ViewModels
             _cache = cache;
             _navigation = navigation;
             DatabaseName = _cache.Database.Name;
-            _items = new BindableCollection<object>();
+            _items = new BindableCollection<IItemViewModel>();
         }
 
         /// <summary>
@@ -86,14 +86,15 @@ namespace SevenPass.ViewModels
 
                 var groups = group
                     .ListGroups()
-                    .Select(x => new GroupItemViewModel(x));
+                    .Select(x => new GroupItemViewModel(x))
+                    .Cast<IItemViewModel>();
 
                 var entries = group
                     .ListEntries()
-                    .Select(x => new EntryItemViewModel(x));
+                    .Select(x => new EntryItemViewModel(x))
+                    .Cast<IItemViewModel>();
 
-                _items.AddRange(groups
-                    .Concat<object>(entries));
+                _items.AddRange(groups.Concat(entries));
             });
         }
 

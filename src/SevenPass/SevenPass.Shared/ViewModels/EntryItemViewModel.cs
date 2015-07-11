@@ -5,7 +5,7 @@ using SevenPass.Models;
 
 namespace SevenPass.ViewModels
 {
-    public sealed class EntryItemViewModel : PropertyChangedBase
+    public sealed class EntryItemViewModel : PropertyChangedBase, IItemViewModel
     {
         private readonly EntryItemModel _entry;
 
