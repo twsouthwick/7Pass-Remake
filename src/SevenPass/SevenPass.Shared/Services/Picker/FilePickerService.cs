@@ -157,7 +157,7 @@ namespace SevenPass.Services.Picker
 
                     var viewModel = view.DataContext as PasswordViewModel;
                     if (viewModel != null)
-                        await viewModel.AddKeyFile(read);
+                        await viewModel.AddKeyFile(read, true);
                     break;
 
                 case FilePickTargets.Attachments:

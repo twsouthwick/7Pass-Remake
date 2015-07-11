@@ -12,6 +12,8 @@ using SevenPass.Messages;
 using SevenPass.Services.Cache;
 using SevenPass.Services.Databases;
 using SevenPass.Services.Picker;
+using Windows.Storage.AccessCache;
+using Windows.Foundation;
 
 namespace SevenPass.ViewModels
 {
@@ -23,6 +25,8 @@ namespace SevenPass.ViewModels
         private readonly PasswordData _password;
         private readonly IFilePickerService _picker;
         private readonly IRegisteredDbsService _registrations;
+
+        private string _id;
         private string _keyfileName;
 
         public bool CanClearKeyfile
@@ -41,7 +45,24 @@ namespace SevenPass.ViewModels
         /// <summary>
         /// Gets or sets the database ID.
         /// </summary>
-        public string Id { get; set; }
+        public string Id
+        {
+            get { return _id; }
+            set
+            {
+                _id = value;
+
+                NotifyOfPropertyChange(() => Id);
+
+                object obj;
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue("db_" + Id, out obj))
+                {
+                    var guid = obj as string;
+
+                    AddKeyFile(StorageApplicationPermissions.FutureAccessList.GetFileAsync(guid));
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the visibility of the Keyfile group
@@ -101,8 +122,19 @@ namespace SevenPass.ViewModels
             _password = new PasswordData();
         }
 
-        public async Task AddKeyFile(IStorageFile file)
+        public async void AddKeyFile(IAsyncOperation<StorageFile> file)
         {
+            await AddKeyFile(await file, false);
+        }
+
+        public async Task AddKeyFile(IStorageFile file, bool persist)
+        {
+            if (persist)
+            {
+                var guid = StorageApplicationPermissions.FutureAccessList.Add(file, file.Name);
+                ApplicationData.Current.LocalSettings.Values.Add("db_" + Id, guid);
+            }
+
             KeyfileName = file.Name;
             using (var input = await file.OpenReadAsync())
                 await _password.AddKeyFile(input);
@@ -123,6 +155,7 @@ namespace SevenPass.ViewModels
         /// </summary>
         public void ClearKeyfile()
         {
+            ApplicationData.Current.LocalSettings.Values.Remove("db_" + Id);
             KeyfileName = null;
             _password.ClearKeyfile();
 
@@ -188,7 +221,7 @@ namespace SevenPass.ViewModels
                 return await _registrations
                     .RetrieveAsync(Id);
             }
-            catch (IOException) {}
+            catch (IOException) { }
 
             var cached = await _registrations
                 .RetrieveCachedAsync(Id);
