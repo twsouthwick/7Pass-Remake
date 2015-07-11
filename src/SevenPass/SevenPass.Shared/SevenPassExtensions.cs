@@ -10,7 +10,7 @@ namespace SevenPass
         {
             foreach (var group in model.ListGroups())
             {
-                foreach (var entry in group.ListEntries())
+                foreach (var entry in group.ExpandEntries())
                 {
                     yield return entry;
                 }
