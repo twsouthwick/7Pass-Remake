@@ -84,6 +84,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\..\SevenPass.Models\SevenPass.Models.csproj">
+      <Project>{35e5a527-49d4-464b-9176-aa718fe447d4}</Project>
+      <Name>SevenPass.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SevenPass\SevenPass.WindowsPhone\SevenPass.WindowsPhone.csproj">
       <Project>{913894ac-5420-403c-a683-9d166f0986c7}</Project>
       <Name>SevenPass.WindowsPhone</Name>

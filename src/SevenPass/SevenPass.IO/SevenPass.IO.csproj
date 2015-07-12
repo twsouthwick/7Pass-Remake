@@ -41,7 +41,6 @@
     <Compile Include="..\..\GlobalInfo.cs">
       <Link>Properties\GlobalInfo.cs</Link>
     </Compile>
-    <Compile Include="Crypto\CrsAlgorithm.cs" />
     <Compile Include="Crypto\HashedBlockFileFormat.cs" />
     <Compile Include="Crypto\HashedInputStream.cs" />
     <Compile Include="Crypto\HashedOutputStream.cs" />
@@ -51,12 +50,17 @@
     <Compile Include="Crypto\Salsa20RandomGenerator.cs" />
     <Compile Include="FileFormat.cs" />
     <Compile Include="Models\FileFormats.cs" />
-    <Compile Include="Models\FileHeaders.cs" />
     <Compile Include="Models\HeaderFields.cs" />
     <Compile Include="Models\ReadHeaderResult.cs" />
     <Compile Include="PasswordData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SevenPass.Models\SevenPass.Models.csproj">
+      <Project>{35e5a527-49d4-464b-9176-aa718fe447d4}</Project>
+      <Name>SevenPass.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

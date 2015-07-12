@@ -178,6 +178,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SevenPass.Models\SevenPass.Models.csproj">
+      <Project>{35e5a527-49d4-464b-9176-aa718fe447d4}</Project>
+      <Name>SevenPass.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SevenPass.IO\SevenPass.IO.csproj">
       <Project>{9f1441bf-222e-4589-a7b7-4db6bdad796b}</Project>
       <Name>SevenPass.IO</Name>
