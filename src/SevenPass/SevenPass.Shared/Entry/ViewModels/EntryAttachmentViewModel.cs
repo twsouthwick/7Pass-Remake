@@ -8,12 +8,13 @@ using Windows.Security.Cryptography;
 using Windows.Storage;
 using Windows.System;
 using SevenPass.Services.Picker;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
     public sealed class EntryAttachmentViewModel
     {
-        private readonly XElement _element;
+        private readonly IKeePassAttachment _element;
         private readonly IFilePickerService _picker;
 
         public bool IsSharing { get; set; }
@@ -28,7 +29,7 @@ namespace SevenPass.Entry.ViewModels
         /// </summary>
         public XElement Value { get; set; }
 
-        public EntryAttachmentViewModel(XElement element,
+        public EntryAttachmentViewModel(IKeePassAttachment element,
             IFilePickerService picker)
         {
             if (element == null) throw new ArgumentNullException("element");

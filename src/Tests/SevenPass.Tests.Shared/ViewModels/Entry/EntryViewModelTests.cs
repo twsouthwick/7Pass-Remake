@@ -6,6 +6,7 @@ using SevenPass.Entry.ViewModels;
 using SevenPass.Services.Cache;
 using SevenPass.ViewModels;
 using Xunit;
+using SevenPass.Models;
 
 namespace SevenPass.Tests.ViewModels.Entry
 {
@@ -22,7 +23,7 @@ namespace SevenPass.Tests.ViewModels.Entry
 
             _viewModel = new EntryViewModel(
                 new MockCacheService(_entry),
-                new IEntrySubViewModel[] {_subModel})
+                new IEntrySubViewModel[] { _subModel })
             {
                 Id = MockCacheService.ID,
             };
@@ -38,16 +39,12 @@ namespace SevenPass.Tests.ViewModels.Entry
         public class MockCacheService : ICacheService
         {
             public const string ID = "NK4XTExcnk+wrek5ojwJfQ==";
-            private readonly XElement _entry;
 
-            public CachedDatabase Database
+            public IKeePassDatabase Database
             {
                 get
                 {
-                    return new CachedDatabase
-                    {
-                        Name = "Demo DB",
-                    };
+                    throw new NotSupportedException();
                 }
             }
 
@@ -56,15 +53,11 @@ namespace SevenPass.Tests.ViewModels.Entry
                 get { throw new NotSupportedException(); }
             }
 
-            public MockCacheService(XElement entry)
+            public MockCacheService()
             {
-                if (entry == null)
-                    throw new ArgumentNullException("entry");
-
-                _entry = entry;
             }
 
-            public void Cache(CachedDatabase database)
+            public void Cache(IKeePassDatabase database)
             {
                 throw new NotSupportedException();
             }
@@ -74,13 +67,13 @@ namespace SevenPass.Tests.ViewModels.Entry
                 throw new NotSupportedException();
             }
 
-            public XElement GetEntry(string uuid)
+            public IKeePassEntry GetEntry(KeePassId uuid)
             {
                 Assert.Equal(ID, uuid);
-                return _entry;
+                return null;
             }
 
-            public XElement GetGroup(string uuid)
+            public IKeePassGroup GetGroup(KeePassId uuid)
             {
                 throw new NotSupportedException();
             }
@@ -90,7 +83,7 @@ namespace SevenPass.Tests.ViewModels.Entry
         {
             public string DisplayName { get; set; }
 
-            public XElement Element { get; set; }
+            public IKeePassEntry Element { get; set; }
 
             public string Id { get; set; }
 
@@ -99,7 +92,7 @@ namespace SevenPass.Tests.ViewModels.Entry
                 yield break;
             }
 
-            public void Loads(XElement element)
+            public void Loads(IKeePassEntry element)
             {
                 Element = element;
             }

@@ -61,23 +61,10 @@ namespace SevenPass.Entry.ViewModels
         {
             var entry = _cache.GetEntry(Id);
 
-            _strings.AddRange(entry
-                .Elements("String")
-                .Select(x => new FieldViewModel
-                {
-                    Key = (string)x.Element("Key"),
-                    Value = (string)x.Element("Value"),
-                }));
+            _strings.AddRange(entry.Fields.Select(x => new FieldViewModel { Key = x.Name, Value = x.Value }));
 
-            UserName = _strings
-                .Where(x => x.Key == "UserName")
-                .Select(x => x.Value)
-                .FirstOrDefault();
-
-            Password = _strings
-                .Where(x => x.Key == "Password")
-                .Select(x => x.Value)
-                .FirstOrDefault();
+            UserName = entry.UserName;
+            Password = entry.Password;
         }
 
         public class FieldViewModel

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SevenPass.Models;
+using System;
 
 namespace SevenPass.ViewModels
 {
     public interface IItemViewModel
     {
-        string Id { get; }
+        KeePassId Id { get; }
     }
 }

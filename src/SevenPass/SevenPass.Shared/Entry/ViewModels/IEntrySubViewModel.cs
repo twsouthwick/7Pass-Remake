@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using Caliburn.Micro;
 using SevenPass.ViewModels;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
@@ -23,6 +24,6 @@ namespace SevenPass.Entry.ViewModels
         /// Loads the entry details.
         /// </summary>
         /// <param name="element">The Entry element.</param>
-        void Loads(XElement element);
+        void Loads(IKeePassEntry element);
     }
 }

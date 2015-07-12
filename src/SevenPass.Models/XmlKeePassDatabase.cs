@@ -1,10 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace SevenPass.Models
 {
+    public class KeePassField
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public bool IsProtected { get; set; }
+    }
+
     public class XmlKeePassDatabase : IKeePassDatabase
     {
         private readonly IList<IKeePassGroup> _groups;
@@ -44,12 +53,15 @@ namespace SevenPass.Models
         }
 
         [DebuggerDisplay("Entry '{Title}'")]
-        private class XmlKeePassEntry : IKeePassEntry
+        public class XmlKeePassEntry : IKeePassEntry
         {
             private readonly KeePassId _id;
             private readonly string _title;
             private readonly string _username;
             private readonly string _password;
+            private readonly string _notes;
+            private readonly IList<KeePassField> _fields;
+            private readonly string _url;
 
             public XmlKeePassEntry(XElement entry)
             {
@@ -60,6 +72,118 @@ namespace SevenPass.Models
                 _title = strings["Title"].FirstOrDefault();
                 _username = strings["UserName"].FirstOrDefault();
                 _password = strings["Password"].FirstOrDefault();
+                _notes = strings["Notes"].FirstOrDefault();
+
+                var url = new StringBuilder(strings["URL"].FirstOrDefault() ?? string.Empty);
+
+                if (url.Length > 0)
+                {
+                    foreach (var item in strings)
+                    {
+                        var key = "{S:" + item.Key + "}";
+                        url.Replace(key, item.First());
+                    }
+                }
+
+                _url = url.ToString();
+
+                _fields = entry.Elements("String")
+                    .Select(x => new
+                    {
+                        Key = (string)x.Element("Key"),
+                        Value = x.Element("Value"),
+                    })
+                    .Where(x => !IsStandardField(x.Key))
+                    .Select(x => new KeePassField
+                    {
+                        Name = (string)x.Key,
+                        Value = (string)x.Value,
+                        IsProtected = IsProtected(x.Value),
+                    })
+                    .ToList();
+
+                //      var attachments = entry
+                //    .Elements("Binary")
+                //    {
+                //        Key = (string)x.Element("Key"),
+                //        Value = x.Element("Value"),
+                //    })
+                //    .ToList();
+
+                //var references = GetReferences(element);
+                //foreach (var attachment in attachments.ToList())
+                //{
+                //    var value = attachment.Value;
+                //    var reference = value.Attribute("Ref");
+                //    if (reference == null)
+                //        continue;
+
+                //    // Referenced binary, update the reference
+                //    var map = references.Value;
+                //    value = map != null
+                //        ? map[(string)reference].FirstOrDefault()
+                //        : null;
+
+                //    if (value != null)
+                //    {
+                //        attachment.Value = value;
+                //        continue;
+                //    }
+
+                //    // Broken reference, do not display
+                //    attachments.Remove(attachment);
+                //}
+            }
+
+            private Lazy<ILookup<string, XElement>> GetReferences(XElement element)
+            {
+                return new Lazy<ILookup<string, XElement>>(() =>
+                {
+                    var root = element.Parent;
+                    while (true)
+                    {
+                        if (root == null)
+                            return null;
+
+                        if (root.Name == "KeePassFile")
+                            break;
+
+                        root = root.Parent;
+                    }
+
+                    return root
+                        .Element("Meta")
+                        .Element("Binaries")
+                        .Elements("Binary")
+                        .Select(x => new
+                        {
+                            Element = x,
+                            Id = x.Attribute("ID"),
+                        })
+                        .Where(x => x.Id != null)
+                        .ToLookup(x => (string)x.Id, x => x.Element);
+                });
+            }
+
+            private static bool IsProtected(XElement element)
+            {
+                var attr = element.Attribute("Protected");
+                return attr != null && (bool)attr;
+            }
+
+            private static bool IsStandardField(string key)
+            {
+                switch (key)
+                {
+                    case "UserName":
+                    case "Password":
+                    case "URL":
+                    case "Notes":
+                    case "Title":
+                        return true;
+                }
+
+                return false;
             }
 
             public KeePassId Id
@@ -81,10 +205,31 @@ namespace SevenPass.Models
             {
                 get { return _title; }
             }
+
+            public string Notes
+            {
+                get { return _notes; }
+            }
+
+            public IList<KeePassField> Fields
+            {
+                get { return _fields; }
+            }
+
+
+            public string Url
+            {
+                get { return _url; }
+            }
+
+            public IList<IKeePassAttachment> Attachment
+            {
+                get { return new List<IKeePassAttachment>(); }
+            }
         }
 
         [DebuggerDisplay("Group '{Name}'")]
-        private class XmlKeePassGroup : IKeePassGroup
+        public class XmlKeePassGroup : IKeePassGroup
         {
             private readonly KeePassId _id;
             private readonly List<IKeePassEntry> _entries;
@@ -101,7 +246,7 @@ namespace SevenPass.Models
                     .Cast<IKeePassEntry>()
                     .ToList();
 
-                _groups = group.Descendants("Group")
+                _groups = group.Elements("Group")
                     .Select(x => new XmlKeePassGroup(x))
                     .Cast<IKeePassGroup>()
                     .ToList();

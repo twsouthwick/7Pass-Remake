@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ContainerExtensionsTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\EntryItemModelTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\XmlKeePassEntryTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GroupItemModelTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CacheServiceTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestIO.cs" />

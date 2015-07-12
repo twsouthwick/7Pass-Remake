@@ -5,32 +5,32 @@ using System.Xml.Linq;
 
 namespace SevenPass.Models
 {
-    public sealed class GroupItemModel : ItemModelBase
+    public sealed class GroupItemModel
     {
-        private readonly XElement _element;
-
+        private IKeePassGroup _group;
         /// <summary>
         /// Gets or sets the group name.
         /// </summary>
         public string Name { get; set; }
+
+        public KeePassId Id { get; set; }
 
         /// <summary>
         /// Gets or sets the group notes.
         /// </summary>
         public string Notes { get; set; }
 
-        public GroupItemModel(XElement element)
-            : base(element)
+        public GroupItemModel(IKeePassGroup group)
         {
-            if (element == null)
-                throw new ArgumentNullException("element");
+            if (group == null)
+                throw new ArgumentNullException("group");
 
-            _element = element;
-            Name = (string)element.Element("Name");
-            Notes = (string)element.Element("Notes");
+            Name = group.Name;
+            Id = group.Id;
+            _group = group;
         }
 
-        public GroupItemModel() {}
+        //public GroupItemModel() { }
 
         /// <summary>
         /// Lists the entries of this group.
@@ -38,8 +38,7 @@ namespace SevenPass.Models
         /// <returns>The entries.</returns>
         public List<EntryItemModel> ListEntries()
         {
-            return _element
-                .Elements("Entry")
+            return _group.Entries
                 .Select(x => new EntryItemModel(x))
                 .ToList();
         }
@@ -50,8 +49,7 @@ namespace SevenPass.Models
         /// <returns>The child groups.</returns>
         public List<GroupItemModel> ListGroups()
         {
-            return _element
-                .Elements("Group")
+            return _group.Groups
                 .Select(x => new GroupItemModel(x))
                 .ToList();
         }

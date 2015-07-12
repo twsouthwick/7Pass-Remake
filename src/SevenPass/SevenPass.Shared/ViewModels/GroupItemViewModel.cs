@@ -10,7 +10,7 @@ namespace SevenPass.ViewModels
         /// <summary>
         /// Gets the group UUID.
         /// </summary>
-        public string Id
+        public KeePassId Id
         {
             get { return _group.Id; }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SevenPass.Models;
+using System;
 using System.Xml.Linq;
 
 namespace SevenPass.Services.Cache
@@ -8,12 +9,12 @@ namespace SevenPass.Services.Cache
         /// <summary>
         /// Gets the cached database.
         /// </summary>
-        CachedDatabase Database { get; }
+        IKeePassDatabase Database { get; }
 
         /// <summary>
         /// Gets the root group.
         /// </summary>
-        XElement Root { get; }
+        IKeePassGroup Root { get; }
 
         /// <summary>
         /// Stores the specified database in cache.
@@ -22,7 +23,7 @@ namespace SevenPass.Services.Cache
         /// <exception cref="ArgumentNullException">
         /// The <paramref name="database"/> cannot be <c>null</c>.
         /// </exception>
-        void Cache(CachedDatabase database);
+        void Cache(IKeePassDatabase database);
 
         /// <summary>
         /// Clears the cache.
@@ -34,13 +35,13 @@ namespace SevenPass.Services.Cache
         /// </summary>
         /// <param name="uuid">The entry's UUID.</param>
         /// <returns>The specified entry, or <c>null</c> if not found.</returns>
-        XElement GetEntry(string uuid);
+        IKeePassEntry GetEntry(KeePassId uuid);
 
         /// <summary>
         /// Gets the Group element with the specified UUID.
         /// </summary>
         /// <param name="uuid">The group's UUID.</param>
         /// <returns>The specified group, or <c>null</c> if not found.</returns>
-        XElement GetGroup(string uuid);
+        IKeePassGroup GetGroup(KeePassId uuid);
     }
 }

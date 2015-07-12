@@ -19,6 +19,21 @@ namespace SevenPass.Models
 
         public string Id { get { return _id; } }
 
+        public override bool Equals(object obj)
+        {
+            return string.Equals(obj, _id);
+        }
+
+        public override int GetHashCode()
+        {
+            return _id.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return _id;
+        }
+
         public static implicit operator KeePassId(string id)
         {
             return new KeePassId(id);
@@ -61,5 +76,13 @@ namespace SevenPass.Models
         string UserName { get; }
         string Password { get; }
         string Title { get; }
+        string Notes { get; }
+        IList<KeePassField> Fields { get; }
+        IList<IKeePassAttachment> Attachment { get; }
+        string Url { get; }
+    }
+
+    public interface IKeePassAttachment
+    {
     }
 }

@@ -7,6 +7,7 @@ using SevenPass.Services.Cache;
 using SevenPass.ViewModels;
 using SevenPass.Entry.ViewModels;
 using Xunit;
+using System.Collections.Generic;
 
 namespace SevenPass.Tests.ViewModels
 {
@@ -28,10 +29,9 @@ namespace SevenPass.Tests.ViewModels
         [Fact]
         public void Should_open_child_group_on_select()
         {
-            _viewModel.SelectedItem = new GroupItemViewModel(new GroupItemModel
-            {
-                Id = MockCacheService.CHILD_GROUP_ID,
-            });
+            var group = new TestGroup(MockCacheService.CHILD_GROUP_ID, string.Empty);
+
+            _viewModel.SelectedItem = new GroupItemViewModel(new GroupItemModel(group));
 
             Assert.Equal(typeof(GroupViewModel), _navigation.Target);
         }
@@ -39,10 +39,7 @@ namespace SevenPass.Tests.ViewModels
         [Fact]
         public void Should_open_entry_on_select()
         {
-            _viewModel.SelectedItem = new EntryItemViewModel(new EntryItemModel
-            {
-                Id = MockCacheService.ENTRY_ID,
-            });
+            _viewModel.SelectedItem = new EntryItemViewModel(new EntryItemModel(new TestEntry { Id = MockCacheService.ENTRY_ID, }));
 
             Assert.Equal(typeof(EntryViewModel), _navigation.Target);
         }
@@ -75,14 +72,11 @@ namespace SevenPass.Tests.ViewModels
             public const string ENTRY_ID = "1gwdeQjEhUeTV4/Ihg4c3g==";
             public const string GROUP_ID = "SnMTc/hDbkKKeEIv3n1qwA==";
 
-            public CachedDatabase Database
+            public IKeePassDatabase Database
             {
                 get
                 {
-                    return new CachedDatabase
-                    {
-                        Name = "Demo DB",
-                    };
+                    return null;
                 }
             }
 
@@ -91,7 +85,7 @@ namespace SevenPass.Tests.ViewModels
                 get { throw new NotSupportedException(); }
             }
 
-            public void Cache(CachedDatabase database)
+            public void Cache(IKeePassDatabase database)
             {
                 throw new NotSupportedException();
             }
@@ -106,22 +100,47 @@ namespace SevenPass.Tests.ViewModels
                 throw new NotSupportedException();
             }
 
-            public XElement GetGroup(string uuid)
+            public IKeePassGroup GetGroup(string uuid)
             {
                 Assert.Equal(GROUP_ID, uuid);
 
-                return new XElement("Group",
-                    new XElement("UUID", GROUP_ID),
-                    new XElement("Name", "Root Group"),
-                    new XElement("Group",
-                        new XElement("UUID", CHILD_GROUP_ID),
-                        new XElement("Name", "Child Group")),
-                    new XElement("Entry",
-                        new XElement("UUID", ENTRY_ID),
-                        new XElement("String",
-                            new XElement("Key", "Title"),
-                            new XElement("Value", "Demo Entry"))));
+                var root = new TestGroup(GROUP_ID, "Root Group");
+                root.Groups.Add(new TestGroup(CHILD_GROUP_ID, "Child group"));
+                root.Entries.Add(new TestEntry { Id = ENTRY_ID, Title = "Demo Entry" });
+
+                return root;
             }
+        }
+        public class TestEntry : IKeePassEntry
+        {
+            public KeePassId Id { get; set; }
+
+            public string UserName { get; set; }
+
+            public string Password { get; set; }
+
+            public string Title { get; set; }
+        }
+
+        public class TestGroup : IKeePassGroup
+        {
+            public TestGroup(KeePassId id, string name)
+            {
+                Id = id;
+                Name = name;
+                Entries = new List<IKeePassEntry>();
+                Groups = new List<IKeePassGroup>();
+            }
+
+            public KeePassId Id { get; private set; }
+
+            public string Name { get; private set; }
+
+            public string Notes { get; private set; }
+
+            public IList<IKeePassEntry> Entries { get; private set; }
+
+            public IList<IKeePassGroup> Groups { get; private set; }
         }
     }
 }

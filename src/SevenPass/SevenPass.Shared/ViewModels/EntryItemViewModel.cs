@@ -14,7 +14,7 @@ namespace SevenPass.ViewModels
         /// <summary>
         /// Gets the entry UUID.
         /// </summary>
-        public string Id
+        public KeePassId Id
         {
             get { return _entry.Id; }
         }

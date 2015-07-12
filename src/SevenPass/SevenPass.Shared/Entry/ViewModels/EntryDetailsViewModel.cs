@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Caliburn.Micro;
 using SevenPass.ViewModels;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
@@ -97,30 +98,13 @@ namespace SevenPass.Entry.ViewModels
             _cmds.Apply(x => x.Visibility = Visibility.Collapsed);
         }
 
-        protected override void Populate(XElement element)
+        protected override void Populate(IKeePassEntry element)
         {
-            var strings = element
-                .Elements("String")
-                .ToLookup(x => (string)x.Element("Key"),
-                    x => (string)x.Element("Value"));
-
-            Title = strings["Title"].FirstOrDefault();
-            UserName = strings["UserName"].FirstOrDefault();
-            Password = strings["Password"].FirstOrDefault();
-
-            var url = new StringBuilder(strings["URL"]
-                .FirstOrDefault() ?? string.Empty);
-
-            if (url.Length > 0)
-            {
-                foreach (var item in strings)
-                {
-                    var key = "{S:" + item.Key + "}";
-                    url.Replace(key, item.First());
-                }
-            }
-
-            Url = url.ToString();
+            Title = element.Title;
+            UserName = element.UserName;
+            Password = element.Password;
+            Url = element.Url.ToString();
+;
         }
 
         public class OpenUrlExternalCommand : AppBarCommandViewModel

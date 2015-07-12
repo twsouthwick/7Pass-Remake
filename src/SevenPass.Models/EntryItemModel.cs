@@ -4,39 +4,37 @@ using System.Xml.Linq;
 
 namespace SevenPass.Models
 {
-    public sealed class EntryItemModel : ItemModelBase
+    public sealed class EntryItemModel
     {
+        private readonly IKeePassEntry _entry;
+
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
-        public string Password { get; set; }
+        public string Password { get { return _entry.Password; } }
 
         /// <summary>
         /// Gets or sets the entry title.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get { return _entry.Title; } }
 
         /// <summary>
         /// Gets or sets the username.
         /// </summary>
-        public string Username { get; set; }
+        public string Username { get { return _entry.UserName; } }
 
-        public EntryItemModel() {}
+        public KeePassId Id { get { return _entry.Id; } }
 
-        public EntryItemModel(XElement element)
-            : base(element)
+        public EntryItemModel() { }
+
+        public EntryItemModel(IKeePassEntry entry)
         {
-            if (element == null)
-                throw new ArgumentNullException("element");
+            if (entry == null)
+            {
+                throw new ArgumentNullException("entry");
+            }
 
-            var strings = element
-                .Elements("String")
-                .ToLookup(x => (string)x.Element("Key"),
-                    x => (string)x.Element("Value"));
-
-            Title = strings["Title"].FirstOrDefault();
-            Username = strings["UserName"].FirstOrDefault();
-            Password = strings["Password"].FirstOrDefault();
+            _entry = entry;
         }
     }
 }

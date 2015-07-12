@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Caliburn.Micro;
 using SevenPass.ViewModels;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
@@ -70,13 +71,9 @@ namespace SevenPass.Entry.ViewModels
             _cmds.Apply(x => x.Visibility = Visibility.Collapsed);
         }
 
-        protected override void Populate(XElement element)
+        protected override void Populate(IKeePassEntry element)
         {
-            Notes = element
-                .Elements("String")
-                .Where(x => (string)x.Element("Key") == "Notes")
-                .Select(x => (string)x.Element("Value"))
-                .FirstOrDefault();
+            Notes = element.Notes;
         }
 
         public sealed class DecreaseFontSizeCommand : AppBarCommandViewModel

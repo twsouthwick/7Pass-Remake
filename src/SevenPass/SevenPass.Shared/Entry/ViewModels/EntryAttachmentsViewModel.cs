@@ -5,6 +5,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Caliburn.Micro;
 using SevenPass.Services.Picker;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
@@ -70,79 +71,16 @@ namespace SevenPass.Entry.ViewModels
             _transferManager.DataRequested -= OnDataRequested;
         }
 
-        protected override void Populate(XElement element)
+        protected override void Populate(IKeePassEntry element)
         {
             if (element == null)
                 throw new ArgumentNullException("element");
 
-            var attachments = element
-                .Elements("Binary")
-                .Select(x => new EntryAttachmentViewModel(x, _picker)
-                {
-                    Key = (string)x.Element("Key"),
-                    Value = x.Element("Value"),
-                })
-                .ToList();
-
-            var references = GetReferences(element);
-            foreach (var attachment in attachments.ToList())
-            {
-                var value = attachment.Value;
-                var reference = value.Attribute("Ref");
-                if (reference == null)
-                    continue;
-
-                // Referenced binary, update the reference
-                var map = references.Value;
-                value = map != null
-                    ? map[(string)reference].FirstOrDefault()
-                    : null;
-
-                if (value != null)
-                {
-                    attachment.Value = value;
-                    continue;
-                }
-
-                // Broken reference, do not display
-                attachments.Remove(attachment);
-            }
-
-            Items.AddRange(attachments);
+            Items.AddRange(element.Attachment.Select(o => new EntryAttachmentViewModel(o, _picker)));
 
             ListVisibility = Items.Any()
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-        }
-
-        private Lazy<ILookup<string, XElement>> GetReferences(XElement element)
-        {
-            return new Lazy<ILookup<string, XElement>>(() =>
-            {
-                var root = element.Parent;
-                while (true)
-                {
-                    if (root == null)
-                        return null;
-
-                    if (root.Name == "KeePassFile")
-                        break;
-
-                    root = root.Parent;
-                }
-
-                return root
-                    .Element("Meta")
-                    .Element("Binaries")
-                    .Elements("Binary")
-                    .Select(x => new
-                    {
-                        Element = x,
-                        Id = x.Attribute("ID"),
-                    })
-                    .Where(x => x.Id != null)
-                    .ToLookup(x => (string)x.Id, x => x.Element);
-            });
         }
 
         private async void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
@@ -157,7 +95,7 @@ namespace SevenPass.Entry.ViewModels
 
             var file = await sharing.SaveToFile();
             data.Properties.Title = file.Name;
-            data.SetStorageItems(new[] {file}, true);
+            data.SetStorageItems(new[] { file }, true);
             defer.Complete();
         }
     }

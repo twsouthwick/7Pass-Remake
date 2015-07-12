@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using Windows.UI.Xaml;
 using Caliburn.Micro;
 using SevenPass.Messages;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
@@ -67,50 +68,22 @@ namespace SevenPass.Entry.ViewModels
                 .Apply(x => x.IsExpanded = false);
         }
 
-        protected override void Populate(XElement element)
+        protected override void Populate(IKeePassEntry element)
         {
             if (element == null)
                 throw new ArgumentNullException("element");
 
-            Items.AddRange(element
-                .Elements("String")
-                .Select(x => new
-                {
-                    Key = (string)x.Element("Key"),
-                    Value = x.Element("Value"),
-                })
-                .Where(x => !IsStandardField(x.Key))
-                .Select(x => new EntryFieldViewModel(this, _events)
-                {
-                    Key = x.Key,
-                    Value = (string)x.Value,
-                    IsProtected = IsProtected(x.Value),
-                }));
+            var fields = element.Fields.Select(x => new EntryFieldViewModel(this, _events)
+            {
+                Key = x.Name,
+                Value = x.Value,
+                IsProtected = x.IsProtected
+            });
+
 
             ListVisibility = Items.Any()
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-        }
-
-        private static bool IsProtected(XElement element)
-        {
-            var attr = element.Attribute("Protected");
-            return attr != null && (bool)attr;
-        }
-
-        private static bool IsStandardField(string key)
-        {
-            switch (key)
-            {
-                case "UserName":
-                case "Password":
-                case "URL":
-                case "Notes":
-                case "Title":
-                    return true;
-            }
-
-            return false;
         }
     }
 }

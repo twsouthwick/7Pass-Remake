@@ -8,12 +8,11 @@ namespace SevenPass.Tests.Models
 {
     public class GroupItemModelTests
     {
-        private readonly XElement _element;
-        private readonly GroupItemModel _group;
+        private readonly IKeePassGroup _group;
 
         public GroupItemModelTests()
         {
-            _element = XElement.Parse(@"<Group>
+            var element = XElement.Parse(@"<Group>
     <UUID>GO5heTuMikaOm0x+OtJ0Hg==</UUID>
     <Name>General</Name>
     <Notes>Notes for General group.</Notes>
@@ -190,7 +189,7 @@ Please do not use URLs with your password because the URL may be sent unencrypte
         <LastTopVisibleEntry>AAAAAAAAAAAAAAAAAAAAAA==</LastTopVisibleEntry>
     </Group>
 </Group>");
-            _group = new GroupItemModel(_element);
+            _group = new XmlKeePassDatabase.XmlKeePassGroup(element);
         }
 
         [Fact]
@@ -200,17 +199,13 @@ Please do not use URLs with your password because the URL may be sent unencrypte
             {
                 "Protected Fields",
                 "Fields In Url"
-            }, _group
-                .ListEntries()
-                .Select(x => x.Title));
+            }, _group.Entries.Select(x => x.Title));
         }
 
         [Fact]
         public void ListGroups_should_parse_groups()
         {
-            Assert.Equal(new[] {"test", "gfdg"}, _group
-                .ListGroups()
-                .Select(x => x.Name));
+            Assert.Equal(new[] { "test", "gfdg" }, _group.Groups.Select(x => x.Name));
         }
 
         [Fact]
@@ -229,12 +224,6 @@ Please do not use URLs with your password because the URL may be sent unencrypte
         public void Should_parse_notes()
         {
             Assert.Equal("Notes for General group.", _group.Notes);
-        }
-
-        [Fact]
-        public void Should_track_element()
-        {
-            Assert.Same(_element, _group.Element);
         }
     }
 }

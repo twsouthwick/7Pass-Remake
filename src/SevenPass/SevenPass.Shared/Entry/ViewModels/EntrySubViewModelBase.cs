@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using Caliburn.Micro;
 using SevenPass.ViewModels;
+using SevenPass.Models;
 
 namespace SevenPass.Entry.ViewModels
 {
     public abstract class EntrySubViewModelBase : Screen, IEntrySubViewModel
     {
-        private XElement _entry;
+        private IKeePassEntry _entry;
 
         /// <summary>
         /// Gets or sets the entry UUID.
@@ -20,7 +21,7 @@ namespace SevenPass.Entry.ViewModels
             yield break;
         }
 
-        public virtual void Loads(XElement element)
+        public virtual void Loads(IKeePassEntry element)
         {
             if (element == null)
                 throw new ArgumentNullException("element");
@@ -41,6 +42,6 @@ namespace SevenPass.Entry.ViewModels
         /// Populate values from entry.
         /// </summary>
         /// <param name="element"></param>
-        protected abstract void Populate(XElement element);
+        protected abstract void Populate(IKeePassEntry element);
     }
 }

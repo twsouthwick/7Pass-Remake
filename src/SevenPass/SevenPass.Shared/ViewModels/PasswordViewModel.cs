@@ -174,11 +174,9 @@ namespace SevenPass.ViewModels
                 var result = await FileFormat.Headers(fs);
                 var headers = result.Headers;
 
-                var masterKey = await _password
-                    .GetMasterKey(headers);
+                var masterKey = await _password.GetMasterKey(headers);
 
-                using (var decrypted = await FileFormat
-                    .Decrypt(fs, masterKey, headers))
+                using (var decrypted = await FileFormat.Decrypt(fs, masterKey, headers))
                 {
                     // TODO: verify start bytes
                     await FileFormat.VerifyStartBytes(
@@ -190,13 +188,10 @@ namespace SevenPass.ViewModels
 
                     // TODO: verify headers integrity
 
-                    _cache.Cache(new CachedDatabase
-                    {
-                        Id = Id,
-                        Document = doc,
-                        Name = DisplayName,
-                        Headers = headers,
-                    });
+                    var xml = new Models.XmlKeePassDatabase(doc, Id, DisplayName);
+
+
+                    _cache.Cache(xml);
 
                     _navigation
                         .UriFor<GroupViewModel>()
