@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CaliburnAutofacApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContainerExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entry\ViewModels\BrowserViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entry\ViewModels\EntryAttachmentsViewModel.cs" />

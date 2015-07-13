@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.ApplicationModel.Activation;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+﻿using Autofac;
 using Caliburn.Micro;
 using SevenPass.Entry.ViewModels;
-using SevenPass.Services;
 using SevenPass.Services.Cache;
 using SevenPass.Services.Databases;
 using SevenPass.Services.Picker;
-using SevenPass.ViewModels;
 using SevenPass.Views;
+using Windows.ApplicationModel.Activation;
+using Windows.UI.Xaml;
 
 namespace SevenPass
 {
     public sealed partial class App
     {
-        private WinRTContainer _container;
-        private IEventAggregator _events;
-
         public App()
         {
             InitializeComponent();
@@ -26,35 +19,21 @@ namespace SevenPass
 
         protected override void BuildUp(object instance)
         {
-            TryRegister(instance);
-            _container.BuildUp(instance);
-        }
+            var handler = instance as IHandle;
+            if (handler != null)
+            {
+                var events = Resolve<IEventAggregator>();
+                events.Subscribe(instance);
+            }
 
-        protected override void Configure()
-        {
-            /*if (System.Diagnostics.Debugger.IsAttached)
-                LogManager.GetLog = x => new DebugLog(x);*/
-
-            RegisterServices();
-        }
-
-        protected override IEnumerable<object> GetAllInstances(Type service)
-        {
-            return _container.GetAllInstances(service);
-        }
-
-        protected override object GetInstance(Type service, string key)
-        {
-            return _container.GetInstance(service, key);
+            base.BuildUp(instance);
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
 
-            _container
-                .GetInstance<IFilePickerService>()
-                .ContinueAsync(args);
+            Resolve<IFilePickerService>().ContinueAsync(args);
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -66,46 +45,48 @@ namespace SevenPass
             }
 
             if (Window.Current.Content == null)
+            {
                 DisplayRootView<MainView>();
+            }
         }
 
-        protected override void PrepareViewFirst(Frame rootFrame)
+        public override void RegisterServices(ContainerBuilder builder)
         {
-            _container.Instance(rootFrame);
-            _container.RegisterNavigationService(rootFrame);
-            _events = _container.GetInstance<IEventAggregator>();
+            base.RegisterServices(builder);
 
-            var messages = new GlobalMessagesService();
-            _events.Subscribe(messages);
-            _container.Instance(messages);
-        }
+            builder.Register(_ => SevenPass.Services.AutoMaps.Initialize())
+                .AsSelf()
+                .SingleInstance();
 
-        private void RegisterServices()
-        {
-            _container = new WinRTContainer();
-            _container.Activated += TryRegister;
-            _container.RegisterWinRTServices();
+            builder.RegisterType<CacheService>()
+                .As<ICacheService>()
+                .SingleInstance();
+            builder.RegisterType<FilePickerService>()
+                .As<IFilePickerService>()
+                .SingleInstance();
+            builder.RegisterType<RegisteredDbsService>()
+                .As<IRegisteredDbsService>()
+                .SingleInstance();
 
-            _container
-                .AssemblyContainingType<MainViewModel>()
-                .RegisterViewModels();
+            //builder.RegisterType<ViewModels.MainViewModel>()
+            //.AsSelf()
+            //.InstancePerDependency();
+            //builder.RegisterType<Views.MainView>()
+            //.AsSelf()
+            //.InstancePerDependency();
 
-            _container.Instance(AutoMaps.Initialize());
-            _container.Singleton<ICacheService, CacheService>();
-            _container.Singleton<IFilePickerService, FilePickerService>();
-            _container.Singleton<IRegisteredDbsService, RegisteredDbsService>();
-
-            _container.PerRequest<IEntrySubViewModel, EntryDetailsViewModel>();
-            _container.PerRequest<IEntrySubViewModel, EntryNotesViewModel>();
-            _container.PerRequest<IEntrySubViewModel, EntryAttachmentsViewModel>();
-            _container.PerRequest<IEntrySubViewModel, EntryFieldsViewModel>();
-        }
-
-        private void TryRegister(object instance)
-        {
-            var handler = instance as IHandle;
-            if (handler != null)
-                _events.Subscribe(instance);
+            builder.RegisterType<EntryDetailsViewModel>()
+                .As<IEntrySubViewModel>()
+                .InstancePerLifetimeScope();
+            builder.RegisterType<EntryNotesViewModel>()
+                .As<IEntrySubViewModel>()
+                .InstancePerLifetimeScope();
+            builder.RegisterType<EntryAttachmentsViewModel>()
+                .As<IEntrySubViewModel>()
+                .InstancePerLifetimeScope();
+            builder.RegisterType<EntryFieldsViewModel>()
+                .As<IEntrySubViewModel>()
+                .InstancePerLifetimeScope();
         }
     }
 }
