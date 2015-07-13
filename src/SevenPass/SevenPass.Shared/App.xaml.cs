@@ -4,6 +4,7 @@ using SevenPass.Entry.ViewModels;
 using SevenPass.Services.Cache;
 using SevenPass.Services.Databases;
 using SevenPass.Services.Picker;
+using SevenPass.ViewModels;
 using SevenPass.Views;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -46,7 +47,7 @@ namespace SevenPass
 
             if (Window.Current.Content == null)
             {
-                DisplayRootView<MainView>();
+                DisplayRootViewFor<MainViewModel>();
             }
         }
 
