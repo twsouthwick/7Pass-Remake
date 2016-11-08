@@ -1,0 +1,1 @@
+Please see the rewrite at https://github.com/twsouthwick/KeePassWin
